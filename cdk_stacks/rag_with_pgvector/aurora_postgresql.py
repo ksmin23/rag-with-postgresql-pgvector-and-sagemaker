@@ -47,9 +47,6 @@ class AuroraPostgresqlStack(Stack):
     db_cluster_name = self.node.try_get_context('db_cluster_name')
     rds_credentials = aws_rds.Credentials.from_generated_secret("postgres")
 
-    # AURORA_POSTGRES_ENGINE_VERSION = aws_rds.AuroraPostgresEngineVersion.of(
-    #   aurora_postgres_full_version="15.3",
-    #   aurora_postgres_major_version="15")
     AURORA_POSTGRES_ENGINE_VERSION = aws_rds.AuroraPostgresEngineVersion.VER_15_3
     rds_engine = aws_rds.DatabaseClusterEngine.aurora_postgres(version=AURORA_POSTGRES_ENGINE_VERSION)
 
@@ -110,7 +107,7 @@ class AuroraPostgresqlStack(Stack):
     self.rds_credentials = db_cluster.secret
     self.sg_rds_client = sg_postgresql_client
 
-    
+
     cdk.CfnOutput(self, 'DBClusterId', value=db_cluster.cluster_identifier, export_name='VectorDBClusterId')
     cdk.CfnOutput(self, 'DBClusterEndpoint', value=db_cluster.cluster_endpoint.socket_address, export_name='VectorDBClusterEndpoint')
     cdk.CfnOutput(self, 'DBClusterReadEndpoint', value=db_cluster.cluster_read_endpoint.socket_address, export_name='VectorDBClusterReadEndpoint')

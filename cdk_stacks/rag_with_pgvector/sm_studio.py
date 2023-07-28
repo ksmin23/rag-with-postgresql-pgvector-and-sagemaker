@@ -36,7 +36,7 @@ class SageMakerStudioStack(Stack):
     sagemaker_custom_access_policy_doc = aws_iam.PolicyDocument()
     sagemaker_custom_access_policy_doc.add_statements(aws_iam.PolicyStatement(**{
       "effect": aws_iam.Effect.ALLOW,
-      "resources": [f"arn:aws:secretsmanager:{cdk.Aws.REGION}:{cdk.Aws.ACCOUNT_ID}:secret:*"], 
+      "resources": [f"arn:aws:secretsmanager:{cdk.Aws.REGION}:{cdk.Aws.ACCOUNT_ID}:secret:*"],
       "actions": ["secretsmanager:GetSecretValue"]
     }))
 
@@ -72,9 +72,9 @@ class SageMakerStudioStack(Stack):
       "resources": ["arn:aws:codebuild:*:*:project/sagemaker-studio*"],
       "actions": [
         "codebuild:DeleteProject",
-				"codebuild:CreateProject",
-				"codebuild:BatchGetBuilds",
-				"codebuild:StartBuild"
+        "codebuild:CreateProject",
+        "codebuild:BatchGetBuilds",
+        "codebuild:StartBuild"
       ]
     }))
 
@@ -89,7 +89,7 @@ class SageMakerStudioStack(Stack):
       "resources": ["arn:aws:logs:*:*:log-group:/aws/codebuild/sagemaker-studio*:log-stream:*"], 
       "actions": [
         "logs:GetLogEvents",
-				"logs:PutLogEvents" 
+        "logs:PutLogEvents"
       ]
     }))
 
@@ -103,9 +103,9 @@ class SageMakerStudioStack(Stack):
       "effect": aws_iam.Effect.ALLOW,
       "resources": ["arn:aws:s3:::sagemaker-*/*"],
       "actions": [
-				"s3:GetObject",
-				"s3:DeleteObject",
-				"s3:PutObject"
+        "s3:GetObject",
+        "s3:DeleteObject",
+        "s3:PutObject"
       ]
     }))
 
@@ -119,8 +119,8 @@ class SageMakerStudioStack(Stack):
       "effect": aws_iam.Effect.ALLOW,
       "resources": ["*"],
       "actions": [
-				"iam:GetRole",
-				"iam:ListRoles"
+        "iam:GetRole",
+        "iam:ListRoles"
       ]
     }))
 
@@ -212,7 +212,7 @@ class SageMakerStudioStack(Stack):
     )
 
     self.sm_execution_role_arn = sagemaker_execution_role.role_arn
-    self.sm_domain_security_group = sg_sagemaker_domain 
+    self.sm_domain_security_group = sg_sagemaker_domain
 
     cdk.CfnOutput(self, f'{self.stack_name}-DomainUrl', value=sagemaker_studio_domain.attr_url)
     cdk.CfnOutput(self, f'{self.stack_name}-DomainId', value=sagemaker_user_profile.domain_id)
