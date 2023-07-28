@@ -143,8 +143,8 @@ class SageMakerStudioStack(Stack):
       path='/',
       inline_policies={
         'sagemaker-execution-policy': sagemaker_execution_policy_doc,
-        'sagemaker-custom-access-policy' : sagemaker_custom_access_policy_doc,
-        'sagemaker-docker-build-policy' : sagemaker_docker_build_policy_doc,
+        'sagemaker-custom-access-policy': sagemaker_custom_access_policy_doc,
+        'sagemaker-docker-build-policy': sagemaker_docker_build_policy_doc,
       },
       managed_policies=[
         aws_iam.ManagedPolicy.from_aws_managed_policy_name('AmazonSageMakerFullAccess'),
