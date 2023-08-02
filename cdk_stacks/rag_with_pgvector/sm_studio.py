@@ -18,7 +18,7 @@ random.seed(47)
 
 class SageMakerStudioStack(Stack):
 
-  def __init__(self, scope: Construct, construct_id: str, vpc, **kwargs) -> None:
+  def __init__(self, scope: Construct, construct_id: str, vpc, sg_rds_client, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     sagemaker_execution_policy_doc = aws_iam.PolicyDocument()
@@ -86,7 +86,7 @@ class SageMakerStudioStack(Stack):
 
     sagemaker_docker_build_policy_doc.add_statements(aws_iam.PolicyStatement(**{
       "effect": aws_iam.Effect.ALLOW,
-      "resources": ["arn:aws:logs:*:*:log-group:/aws/codebuild/sagemaker-studio*:log-stream:*"], 
+      "resources": ["arn:aws:logs:*:*:log-group:/aws/codebuild/sagemaker-studio*:log-stream:*"],
       "actions": [
         "logs:GetLogEvents",
         "logs:PutLogEvents"
@@ -178,7 +178,7 @@ class SageMakerStudioStack(Stack):
     sg_sagemaker_domain.add_ingress_rule(peer=aws_ec2.Peer.ipv4("0.0.0.0/0"), connection=aws_ec2.Port.tcp(443),
       description='https')
     cdk.Tags.of(sg_sagemaker_domain).add('Name', 'sagemaker-domain-sg')
-  
+
     sagemaker_studio_domain = aws_sagemaker.CfnDomain(self, 'SageMakerStudioDomain',
       auth_mode='IAM', # [SSO | IAM]
       default_user_settings=sm_studio_user_settings,
@@ -202,7 +202,10 @@ class SageMakerStudioStack(Stack):
           sage_maker_image_arn=sagmaker_jupyerlab_arn
         )
       ),
-      security_groups=[sg_sagemaker_domain.security_group_id]
+      security_groups=[
+        sg_sagemaker_domain.security_group_id,
+        sg_rds_client.security_group_id
+      ]
     )
 
     sagemaker_user_profile = aws_sagemaker.CfnUserProfile(self, 'SageMakerStudioUserProfile',
@@ -214,8 +217,9 @@ class SageMakerStudioStack(Stack):
     self.sm_execution_role_arn = sagemaker_execution_role.role_arn
     self.sm_domain_security_group = sg_sagemaker_domain
 
-    cdk.CfnOutput(self, f'{self.stack_name}-DomainUrl', value=sagemaker_studio_domain.attr_url)
-    cdk.CfnOutput(self, f'{self.stack_name}-DomainId', value=sagemaker_user_profile.domain_id)
-    cdk.CfnOutput(self, f'{self.stack_name}-UserProfileName', value=sagemaker_user_profile.user_profile_name)
-    cdk.CfnOutput(self, f'{self.stack_name}-SecurityGroupId', value=sg_sagemaker_domain.security_group_id)
-
+    cdk.CfnOutput(self, 'DomainUrl', value=sagemaker_studio_domain.attr_url,
+                  export_name=f'{self.stack_name}-DomainUrl')
+    cdk.CfnOutput(self, 'DomainId', value=sagemaker_user_profile.domain_id,
+                  export_name=f'{self.stack_name}-DomainId')
+    cdk.CfnOutput(self, 'UserProfileName', value=sagemaker_user_profile.user_profile_name,
+                  export_name=f'{self.stack_name}-UserProfileName')

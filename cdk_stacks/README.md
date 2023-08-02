@@ -80,16 +80,16 @@ EmbeddingEndpointStack
 LLMEndpointStack
 ```
 
-#### Step 2: Create SageMaker Studio
+#### Step 2: Create Aurora Postgresql cluster
 
 ```
-(.venv) $ cdk deploy --require-approval never RAGVpcStack RAGSageMakerStudioStack
+(.venv) $ cdk deploy --require-approval never RAGVpcStack RAGPgVectorStack
 ```
 
-#### Step 3: Create Aurora Postgresql cluster
+#### Step 3: Create SageMaker Studio
 
 ```
-(.venv) $ cdk deploy --require-approval never RAGPgVectorStack
+(.venv) $ cdk deploy --require-approval never RAGSageMakerStudioStack
 ```
 
 #### Step 4: Deploy LLM Embedding Endpoint

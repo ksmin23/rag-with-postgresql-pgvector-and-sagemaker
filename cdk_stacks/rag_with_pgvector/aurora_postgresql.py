@@ -12,7 +12,7 @@ from constructs import Construct
 
 class AuroraPostgresqlStack(Stack):
 
-  def __init__(self, scope: Construct, construct_id: str, vpc, sg_sagemaker_domain, **kwargs) -> None:
+  def __init__(self, scope: Construct, construct_id: str, vpc, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     sg_postgresql_client = aws_ec2.SecurityGroup(self, 'PostgreSQLClientSG',
@@ -33,8 +33,6 @@ class AuroraPostgresqlStack(Stack):
       description='postgresql-server-sg')
     sg_postgresql_server.add_ingress_rule(peer=sg_postgresql_client, connection=aws_ec2.Port.tcp(5432),
       description='postgresql-client-sg')
-    sg_postgresql_server.add_ingress_rule(peer=sg_sagemaker_domain, connection=aws_ec2.Port.tcp(5432),
-      description='sagemaker-domain-sg')
     cdk.Tags.of(sg_postgresql_server).add('Name', 'postgresql-server-sg')
 
     rds_subnet_group = aws_rds.SubnetGroup(self, 'PostgreSQLSubnetGroup',
