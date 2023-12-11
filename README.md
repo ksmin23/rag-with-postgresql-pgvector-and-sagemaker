@@ -39,3 +39,6 @@ The overall architecture is like this:
   * [Streamlit](https://streamlit.io/) - A faster way to build and share data apps
   * [rag-with-amazon-kendra](https://github.com/ksmin23/rag-with-amazon-kendra) - Question Answering application with Large Language Models (LLMs) and Amazon Kendra
   * [rag-with-amazon-opensearch](https://github.com/ksmin23/rag-with-amazon-opensearch) - Question Answering application with Large Language Models (LLMs) and Amazon OpenSearch Service
+  * [Pgvector changelog](https://github.com/pgvector/pgvector/blob/master/CHANGELOG.md#040-2023-01-11)
+    > Increased max dimensions for vector from 1024 to 16000<br/>
+    > Increased max dimensions for index from 1024 to 2000
