@@ -115,7 +115,11 @@ cdk.out/
 cdk.context.json*
 zap/
 
-.gitignore
+*/.gitignore
 */setup.py
 */source.bat
+
+*/*/.gitignore
+*/*/setup.py
+*/*/source.bat
 

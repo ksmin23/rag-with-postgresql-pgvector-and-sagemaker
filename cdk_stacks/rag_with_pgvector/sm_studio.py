@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-import os
+# -*- encoding: utf-8 -*-
+# vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
+
 import random
 import string
 
@@ -9,7 +11,6 @@ from aws_cdk import (
   Stack,
   aws_ec2,
   aws_iam,
-  aws_s3 as s3,
   aws_sagemaker
 )
 from constructs import Construct
@@ -179,16 +180,18 @@ class SageMakerStudioStack(Stack):
       description='https')
     cdk.Tags.of(sg_sagemaker_domain).add('Name', 'sagemaker-domain-sg')
 
+    sm_studio_domain_name = self.node.try_get_context('sagemaker_studio_domain_name') or 'llm-app-rag-pgvector'
+
     sagemaker_studio_domain = aws_sagemaker.CfnDomain(self, 'SageMakerStudioDomain',
       auth_mode='IAM', # [SSO | IAM]
       default_user_settings=sm_studio_user_settings,
-      domain_name='llm-app-rag-workshop',
+      domain_name=sm_studio_domain_name,
       subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).subnet_ids,
       vpc_id=vpc.vpc_id,
       app_network_access_type='VpcOnly', # [PublicInternetOnly | VpcOnly]
       domain_settings=aws_sagemaker.CfnDomain.DomainSettingsProperty(
         security_group_ids=[sg_sagemaker_domain.security_group_id]
-      ),
+      )
     )
 
     #XXX: https://docs.aws.amazon.com/sagemaker/latest/dg/studio-jl.html#studio-jl-set
@@ -214,8 +217,6 @@ class SageMakerStudioStack(Stack):
       user_settings=default_user_settings
     )
 
-    self.sm_execution_role_arn = sagemaker_execution_role.role_arn
-    self.sm_domain_security_group = sg_sagemaker_domain
 
     cdk.CfnOutput(self, 'DomainUrl', value=sagemaker_studio_domain.attr_url,
                   export_name=f'{self.stack_name}-DomainUrl')
@@ -223,5 +224,5 @@ class SageMakerStudioStack(Stack):
                   export_name=f'{self.stack_name}-DomainId')
     cdk.CfnOutput(self, 'UserProfileName', value=sagemaker_user_profile.user_profile_name,
                   export_name=f'{self.stack_name}-UserProfileName')
-    cdk.CfnOutput(self, 'DomainSecurityGroupId', value=self.sm_domain_security_group.security_group_id,
+    cdk.CfnOutput(self, 'DomainSecurityGroupId', value=sg_sagemaker_domain.security_group_id,
                   export_name=f'{self.stack_name}-DomainSecurityGroupId')
